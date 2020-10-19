@@ -15,7 +15,19 @@
 	</b:bean>
 
 	<b:bean id="keyManager"
-		class="org.springframework.security.saml.key.EmptyKeyManager"></b:bean>
+		class="org.springframework.security.saml.key.JKSKeyManager">
+		<b:constructor-arg
+			value="classpath:at/porscheinformatik/pnet/saml2/sample/springsecurity/saml2.keystore" />
+		<b:constructor-arg type="java.lang.String"
+			value="changeme" />
+		<b:constructor-arg>
+			<b:map>
+				<b:entry key="saml2-sample" value="changeme" />
+			</b:map>
+		</b:constructor-arg>
+		<b:constructor-arg type="java.lang.String"
+			value="saml2-sample" />
+	</b:bean>
 
 	<b:bean id="metadataManager"
 		class="org.springframework.security.saml.metadata.MetadataManager">
@@ -24,8 +36,14 @@
 	<b:bean id="contextProvider"
 		class="org.springframework.security.saml.context.SAMLContextProviderImpl"></b:bean>
 
+	<b:bean id="extendedMetadata"
+		class="org.springframework.security.saml.metadata.ExtendedMetadata">
+		<b:property name="signingKey" value="saml2-sample" />
+		<b:property name="encryptionKey" value="saml2-sample" />
+	</b:bean>
+
 	<b:bean id="metadataGenerator"
-		class="org.springframework.security.saml.metadata.MetadataGenerator">
+		class="at.porscheinformatik.pnet.saml2.sample.springsecurity.PnetMetadataGenerator">
 
 		<b:property name="entityBaseURL"
 			value="https://localhost:8443/saml2">
@@ -46,10 +64,11 @@
 
 		<b:property name="nameID">
 			<b:list>
-				<b:value>urn:oasis:names:tc:SAML:2.0:nameid-format:transient
-				</b:value>
+				<b:value>transient</b:value>
 			</b:list>
 		</b:property>
+
+		<b:property name="extendedMetadata" ref="extendedMetadata"></b:property>
 	</b:bean>
 
 	<b:bean id="metadataGeneratorFilter"
@@ -58,7 +77,8 @@
 	</b:bean>
 
 	<b:bean id="metadataDisplayFilter"
-		class="at.porscheinformatik.pnet.saml2.sample.springsecurity.ValidUntilMetadataDisplayFilter">
+		class="at.porscheinformatik.pnet.saml2.sample.springsecurity.PnetMetadataDisplayFilter">
+		<b:property name="filterProcessesUrl" value="/saml2"></b:property>
 	</b:bean>
 
 	<b:bean id="samlEntryPoint"
