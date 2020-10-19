@@ -1,0 +1,97 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:b="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
+
+	<b:bean id="bootstrap"
+		class="org.springframework.security.saml.SAMLBootstrap"></b:bean>
+
+	<b:bean id="samlLogger"
+		class="org.springframework.security.saml.log.SAMLDefaultLogger">
+		<b:property name="logAllMessages" value="true" />
+		<b:property name="logErrors" value="true" />
+		<b:property name="logMessagesOnException" value="true" />
+	</b:bean>
+
+	<b:bean id="keyManager"
+		class="org.springframework.security.saml.key.EmptyKeyManager"></b:bean>
+
+	<b:bean id="metadataManager"
+		class="org.springframework.security.saml.metadata.MetadataManager">
+	</b:bean>
+
+	<b:bean id="contextProvider"
+		class="org.springframework.security.saml.context.SAMLContextProviderImpl"></b:bean>
+
+	<b:bean id="metadataGenerator"
+		class="org.springframework.security.saml.metadata.MetadataGenerator">
+
+		<b:property name="entityBaseURL"
+			value="https://localhost:8443/saml2">
+		</b:property>
+
+		<b:property name="entityId"
+			value="https://localhost:8443/saml2">
+		</b:property>
+
+		<b:property name="wantAssertionSigned" value="true">
+		</b:property>
+
+		<b:property name="bindingsSSO">
+			<b:list>
+				<b:value>post</b:value>
+			</b:list>
+		</b:property>
+
+		<b:property name="nameID">
+			<b:list>
+				<b:value>urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+				</b:value>
+			</b:list>
+		</b:property>
+	</b:bean>
+
+	<b:bean id="metadataGeneratorFilter"
+		class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
+		<b:constructor-arg ref="metadataGenerator"></b:constructor-arg>
+	</b:bean>
+
+	<b:bean id="metadataDisplayFilter"
+		class="at.porscheinformatik.pnet.saml2.sample.springsecurity.ValidUntilMetadataDisplayFilter">
+	</b:bean>
+
+	<b:bean id="samlEntryPoint"
+		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+		<b:property name="realmName" value="test">
+		</b:property>
+	</b:bean>
+
+	<b:bean id="authProvider"
+		class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+		<b:constructor-arg value="test">
+		</b:constructor-arg>
+	</b:bean>
+
+	<b:bean id="authManager"
+		class="org.springframework.security.authentication.ProviderManager">
+		<b:constructor-arg>
+			<b:list>
+				<b:ref bean="authProvider" />
+			</b:list>
+		</b:constructor-arg>
+	</b:bean>
+
+	<http entry-point-ref="samlEntryPoint"
+		authentication-manager-ref="authManager">
+		<custom-filter before="FIRST"
+			ref="metadataGeneratorFilter" />
+		<custom-filter after="FIRST" ref="metadataDisplayFilter" />
+		<!-- <custom-filter after="BASIC_AUTH_FILTER" -->
+		<!-- ref="samlFilter" /> -->
+
+
+
+		<intercept-url pattern="/**" access="isAuthenticated()" />
+	</http>
+</b:beans>
