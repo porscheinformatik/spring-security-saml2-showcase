@@ -29,8 +29,30 @@
 			value="saml2-sample" />
 	</b:bean>
 
+	<b:bean id="idpMetadata"
+		class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+		<b:constructor-arg>
+			<b:bean
+				class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
+				<b:constructor-arg
+					value="https://qa-identity.auto-partner.net/identity/saml2">
+				</b:constructor-arg>
+				<b:constructor-arg>
+					<!-- Timeout for metadata loading in ms -->
+					<b:value type="int">
+						5000
+					</b:value>
+				</b:constructor-arg>
+				<b:property name="parserPool" ref="parserPool" />
+			</b:bean>
+		</b:constructor-arg>
+	</b:bean>
+
 	<b:bean id="metadataManager"
 		class="org.springframework.security.saml.metadata.MetadataManager">
+		<b:constructor-arg>
+			<b:list></b:list>
+		</b:constructor-arg>
 	</b:bean>
 
 	<b:bean id="contextProvider"
