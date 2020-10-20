@@ -25,5 +25,15 @@
 			<artifactId>spring-security-saml2-core</artifactId>
 			<version>1.0.10.RELEASE</version>
 		</dependency>
+
+		<!-- Important to use a newer Version of xmlsec as the default one has 
+			a bug with AES-GCM Encrption The algorithm is not passed to the XMLCipher 
+			by Opensaml, and the cipher in the old version does not use the algorithm 
+			method provided by the assertion as fallback -->
+		<dependency>
+			<groupId>org.apache.santuario</groupId>
+			<artifactId>xmlsec</artifactId>
+			<version>2.0.10</version>
+		</dependency>
 	</dependencies>
 </project>
