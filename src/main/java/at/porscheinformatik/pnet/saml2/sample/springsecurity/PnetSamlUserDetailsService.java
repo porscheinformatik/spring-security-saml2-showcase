@@ -8,7 +8,9 @@ public class PnetSamlUserDetailsService implements SAMLUserDetailsService {
 
 	@Override
 	public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
-		return new UserData("Test");
+		String subjectId = credential.getAttributeAsString("urn:oasis:names:tc:SAML:attribute:subject-id");
+
+		return new UserData(subjectId);
 	}
 
 }
